@@ -1,6 +1,7 @@
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder'
 import { UserEntity, UserProps } from '../../user.entity'
 import { EntityValidationError } from '@/shared/domain/errors/validation-error'
+import { Entity } from '@/shared/domain/entities/entity'
 describe('UserEntity integration tests', () => {
   describe('Constructor method', () => {
     it('Should throw an error when creating a user with invalid name', () => {
@@ -84,12 +85,32 @@ describe('UserEntity integration tests', () => {
       expect(() => new UserEntity(props)).toThrow(EntityValidationError)
     })
 
-    it('Should a valid user', () => {
+    it('Should be a valid user', () => {
       expect.assertions(0)
       const props: UserProps = {
         ...UserDataBuilder({}),
       }
       new UserEntity(props)
+    })
+  })
+
+  describe('Update method', () => {
+    it('Should throw an error when update a user with invalid name', () => {
+      const entity = new UserEntity(UserDataBuilder({}))
+      expect(() => entity.update(null)).toThrow(EntityValidationError)
+      expect(() => entity.update('')).toThrow(EntityValidationError)
+      expect(() => entity.update(10 as any)).toThrow(EntityValidationError)
+      expect(() => entity.update('a'.repeat(256))).toThrow(
+        EntityValidationError,
+      )
+    })
+    it('Should be a valid user', () => {
+      expect.assertions(0)
+      const props: UserProps = {
+        ...UserDataBuilder({}),
+      }
+      const entity = new UserEntity(props)
+      entity.update('other name')
     })
   })
 })
