@@ -8,7 +8,14 @@ export abstract class InMemoryRepository<E extends Entity>
   items: E[] = []
 
   insert(entity: E): Promise<void> {
-    this.items.push(entity)
+    return new Promise((resolve, reject) => {
+      try {
+        this.items.push(entity)
+        resolve()
+      } catch (error) {
+        reject(Error(error))
+      }
+    })
   }
 
   findById(id: string): Promise<E> {
@@ -16,7 +23,13 @@ export abstract class InMemoryRepository<E extends Entity>
   }
 
   findAll(): Promise<E[]> {
-    return this.items
+    return new Promise((resolve, reject) => {
+      try {
+        resolve(this.items)
+      } catch (error) {
+        reject(Error(error))
+      }
+    })
   }
 
   async update(entity: E): Promise<void> {
@@ -32,11 +45,17 @@ export abstract class InMemoryRepository<E extends Entity>
   }
 
   protected _get(id: string): Promise<E> {
-    const _id = `${id}`
-    const entity = this.items.find(item => item.id === _id)
-    if (!entity) {
-      throw new NotFoundError('Entity not found')
-    }
-    return entity
+    return new Promise((resolve, reject) => {
+      try {
+        const _id = `${id}`
+        const entity = this.items.find(item => item.id === _id)
+        if (!entity) {
+          throw new NotFoundError('Entity not found')
+        }
+        resolve(entity)
+      } catch (error) {
+        reject(Error(error))
+      }
+    })
   }
 }
